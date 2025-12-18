@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Sensor Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<h1>Real-Time Sensor Data</h1>
+
+<h2>Temperature</h2>
+<div id="temp-graph"></div>
+
+<h2>Humidity</h2>
+<div id="hum-graph"></div>
+
+<script>
+function fetchAndUpdate() {
+    fetch("/data")
+        .then(res => res.json())
+        .then(data => {
+            Plotly.react("temp-graph", [{
+                x: data.timestamps,
+                y: data.temperatures,
+                mode: "lines+markers",
+                name: "Temperature"
+            }], {
+                title: "Temperature over Time",
+                xaxis: { title: "Time" },
+                yaxis: { title: "°C" }
+            });
+
+            Plotly.react("hum-graph", [{
+                x: data.timestamps,
+                y: data.humidities,
+                mode: "lines+markers",
+                name: "Humidity"
+            }], {
+                title: "Humidity over Time",
+                xaxis: { title: "Time" },
+                yaxis: { title: "%" }
+            });
+        })
+        .catch(err => console.error("Update failed:", err));
+}
+
+// Initial load
+fetchAndUpdate();
+
+// Update every 2 seconds
+setInterval(fetchAndUpdate, 2000);
+</script>
+
+</body>
+</html>
